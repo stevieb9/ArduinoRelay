@@ -22,6 +22,7 @@ class ArduinoRelay {
         
         ArduinoRelay ();
         ArduinoRelay (int8_t pin) { _pin = pin; pinMode(_pin, OUTPUT); }
+        ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
 
         uint8_t state () { return _state; }
         uint8_t state (uint8_t state) { _state = state; return _state; }
