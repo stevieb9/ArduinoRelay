@@ -1,15 +1,14 @@
 #ifndef ARDUINORELAY_H
 #define ARDUINORELAY_H
 
-#define DEBUG_TIMING true
-
 #include "Arduino.h"
 
 using namespace std;
 
 class ArduinoRelay {
 
-    private:
+    protected:
+
         uint8_t _init           = false;
         uint8_t _reverseState   = false;
         uint8_t _on             = HIGH;

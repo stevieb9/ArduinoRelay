@@ -1,8 +1,6 @@
 #include "Arduino.h"
 #include "ArduinoRelay.h"
 
-/* METHODS */
-
 uint8_t ArduinoRelay::reverse (uint8_t set) {
 
     if (set) {
