@@ -1,7 +1,8 @@
 Revision history for Perl extension RPi::WiringPi.
 
 0.02 UNREL
-    - 
+    - Added turnOn() and turnOff()
+    - Added on() and off()
 
 0.01 2020-03-21
     - Initial release

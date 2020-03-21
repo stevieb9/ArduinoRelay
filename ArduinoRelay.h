@@ -21,18 +21,28 @@ class ArduinoRelay {
     public:
         
         ArduinoRelay ();
-        ArduinoRelay (int8_t pin) { _pin = pin; }
+        ArduinoRelay (int8_t pin) { _pin = pin; pinMode(_pin, OUTPUT); }
 
         uint8_t state () { return _state; }
+        uint8_t state (uint8_t state) { _state = state; return _state; }
 
         char*   name () { return _name; }
-        char*   name (char* name) { _name = name; }
+        char*   name (char* name) { _name = name; return _name;}
 
         uint8_t reverse () { return _reverseState; }
-        uint8_t reverse (uint8_t);
+        uint8_t reverse (uint8_t rev);
 
         int8_t  pin () { return _pin; }
         int8_t  pin (int8_t pin) { _pin = pin; return _pin; }
+
+        uint8_t init () { return _init; }
+        uint8_t init (uint8_t init) { _init = init; return _init; }
+
+        uint8_t on ()  { return _on; }
+        uint8_t off () { return _off; }
+
+        void    turnOn ()  { digitalWrite(_pin, _on); }
+        void    turnOff () { digitalWrite(_pin, _off); }
 };
 
 #endif
