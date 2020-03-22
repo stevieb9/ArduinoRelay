@@ -1,6 +1,6 @@
-//#include "CycleTimerRelay.h"
+#include "CycleTimerRelay.h"
 #include "TemperatureRelay.h"
-//#include "HumidityRelay.h"
+#include "HumidityRelay.h"
 
 #define PIN   2
 
@@ -12,8 +12,6 @@
 TemperatureRelay temp(PIN, TEMP);
 HumidityRelay hum(PIN, HUM);
 CycleTimerRelay cyc(PIN, CYC_ON, CYC_OFF);
-
-
 
 void setup() {
     Serial.begin(9600);
@@ -46,41 +44,9 @@ void setup() {
 }
 
 void loop() {
-    float tempF = 77.28;
-
-    /* Signal the timer on each pass of loop() */
-    ctr.process(tempF);
-
-    /* Factor is +/- of the enactment temp, defaults to 1 */
-    ctr.factor(3);
-    uint8_t factor = factor();
-
-    /* Check the current state of the pin */
-    bool state = ctr.state();
-
-    /* Check reverse state */
-    bool reversed = ctr.reverse();
-    
-    /* Get the name of the object */
-    char* name = ctr.name();
-
-    /* Get the on or off temp */
-    uint8_t onTemp  = ctr.onTemp();
-    uint8_t offTemp = ctr.offTemp();
-
-    /* Set the on and off temps */
-    ctr.onTemp(ON_TEMP);
-    ctr.offTemp(OFF_TEMP);
-
-    /* Get/set the relay pin */
-    int8_t = ctr.pin();
-    //ctr.pin(RELAY_PIN);
-
-    /* Disable the relay */
-    //ctr.pin(-1);
 }
 
 void is (bool arg, const char* msg) {
-    Serial.print(msg);
-    arg ? Serial.println(F(": OK")) : Serial.println(F(": FAIL"));
+    arg ? Serial.print(F("OK:   ")) : Serial.println(F("FAIL: "));
+    Serial.println(msg);
 }
