@@ -42,8 +42,8 @@ class ArduinoRelay {
         uint8_t on ()  { return _on; }
         uint8_t off () { return _off; }
 
-        void    turnOn ()  { digitalWrite(_pin, _on); }
-        void    turnOff () { digitalWrite(_pin, _off); }
+        void    turnOn ()  { digitalWrite(pin(), on()); }
+        void    turnOff () { digitalWrite(pin(), off()); }
 };
 
 #endif
