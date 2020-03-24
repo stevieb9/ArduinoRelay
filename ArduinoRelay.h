@@ -21,8 +21,8 @@ class ArduinoRelay {
         explicit ArduinoRelay (int8_t pin) { _pin = pin; pinMode(_pin, OUTPUT); }
         ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
 
-        int8_t  pin () { return _pin; }
-        int8_t  pin (int8_t pin) { _pin = pin; return _pin; }
+        int8_t pin () { return _pin; }
+        int8_t pin (int8_t pin) { _pin = pin; return _pin; }
 
         uint8_t on ()  { return _on; }
         uint8_t off () { return _off; }
@@ -33,8 +33,8 @@ class ArduinoRelay {
         uint8_t state () { return _state; }
         uint8_t state (uint8_t state) { _state = state; return _state; }
 
-        void    turnOn ()  { digitalWrite(pin(), on()); }
-        void    turnOff () { digitalWrite(pin(), off()); }
+        void turnOn ()  { digitalWrite(pin(), on()); }
+        void turnOff () { digitalWrite(pin(), off()); }
 };
 
 #endif
