@@ -9,19 +9,18 @@ class ArduinoRelay {
 
     protected:
 
-        uint8_t _init           = false;
         uint8_t _reverseState   = false;
         uint8_t _on             = HIGH;
         uint8_t _off            = LOW;
-        uint8_t _state          = _on;
+        uint8_t _state          = _off;
 
         char*   _name = "";
         int8_t  _pin  = -1;
 
     public:
         
-        ArduinoRelay ();
-        ArduinoRelay (int8_t pin) { _pin = pin; pinMode(_pin, OUTPUT); }
+        ArduinoRelay () = default;
+        explicit ArduinoRelay (int8_t pin) { _pin = pin; pinMode(_pin, OUTPUT); }
         ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
 
         uint8_t state () { return _state; }
@@ -35,9 +34,6 @@ class ArduinoRelay {
 
         int8_t  pin () { return _pin; }
         int8_t  pin (int8_t pin) { _pin = pin; return _pin; }
-
-        uint8_t init () { return _init; }
-        uint8_t init (uint8_t init) { _init = init; return _init; }
 
         uint8_t on ()  { return _on; }
         uint8_t off () { return _off; }
