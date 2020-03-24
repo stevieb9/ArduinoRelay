@@ -13,9 +13,7 @@ class ArduinoRelay {
         uint8_t _on             = HIGH;
         uint8_t _off            = LOW;
         uint8_t _state          = _off;
-
-        char*   _name = "";
-        int8_t  _pin  = -1;
+        int8_t  _pin            = -1;
 
     public:
         
@@ -25,9 +23,6 @@ class ArduinoRelay {
 
         uint8_t state () { return _state; }
         uint8_t state (uint8_t state) { _state = state; return _state; }
-
-        char*   name () { return _name; }
-        char*   name (char* name) { _name = name; return _name;}
 
         uint8_t reverse () { return _reverseState; }
         uint8_t reverse (uint8_t rev);
