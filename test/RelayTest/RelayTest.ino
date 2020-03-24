@@ -12,6 +12,8 @@
 #define CYC_ON      1000
 #define CYC_OFF     1000
 
+int16_t fail = 0;
+
 TemperatureRelay temp(TP, TEMP);
 HumidityRelay hum(HP, HUM);
 CycleTimerRelay cyc(CP, CYC_ON, CYC_OFF);
@@ -22,11 +24,16 @@ void setup() {
     cycleRelayTests();
     tempRelayTests();
     humidityRelayTests();
+
+    doneTesting();
 }
 
-void humTest (uint8_t state, const __FlashStringHelper* msg) {
-    is (cyc.state() == state, msg);
-    is (digitalRead(CP) == state, msg);
+void doneTesting () {
+    if (! fail) {
+        Serial.print(F("\n\n\n"));
+        Serial.println(F("ALL TESTS OK"));
+    }
+
 }
 
 void humTest (uint8_t state, const __FlashStringHelper* msg) {
@@ -44,6 +51,7 @@ void loop() {
 
 void is (bool arg, const __FlashStringHelper* msg) {
     if (! arg) {
+        fail++;
         Serial.print(F("FAIL: "));
         Serial.println(msg);
     }
@@ -54,12 +62,16 @@ void is (bool arg, const __FlashStringHelper* msg) {
 void cycleRelayTests () {
     // CYCLE RELAY
 
+    //is (cyc.name("cyc") == (char*)F("cyc"), F("Cyc name"));
+
     is (cyc.reverse(true) == true, F("Cyc rev true"));
     is (cyc.reverse(false) == false, F("Cyc rev false"));
 }
 
 void humidityRelayTests () {
     // HUMIDITY RELAY
+
+    //is (hum.name("hum") == (char*)F("hum"), F("Hum name"));
 
     is (hum.reverse(true) == true, F("Hum rev true"));
     is (hum.reverse(false) == false, F("Hum rev false"));
@@ -141,6 +153,8 @@ void humidityRelayTests () {
 
 void tempRelayTests () {
     // TEMP RELAY
+
+    //is (temp.name("temp") == (char*)F("temp"), F("Temp name"));
 
     is (temp.reverse(true) == true, F("Temp rev true"));
     is (temp.reverse(false) == false, F("Temp rev false"));
