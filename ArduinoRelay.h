@@ -21,17 +21,17 @@ class ArduinoRelay {
         explicit ArduinoRelay (int8_t pin) { _pin = pin; pinMode(_pin, OUTPUT); }
         ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
 
-        uint8_t state () { return _state; }
-        uint8_t state (uint8_t state) { _state = state; return _state; }
-
-        uint8_t reverse () { return _reverseState; }
-        uint8_t reverse (uint8_t rev);
-
         int8_t  pin () { return _pin; }
         int8_t  pin (int8_t pin) { _pin = pin; return _pin; }
 
         uint8_t on ()  { return _on; }
         uint8_t off () { return _off; }
+
+        uint8_t reverse () { return _reverseState; }
+        uint8_t reverse (uint8_t rev);
+
+        uint8_t state () { return _state; }
+        uint8_t state (uint8_t state) { _state = state; return _state; }
 
         void    turnOn ()  { digitalWrite(pin(), on()); }
         void    turnOff () { digitalWrite(pin(), off()); }
