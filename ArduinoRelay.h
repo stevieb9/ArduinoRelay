@@ -9,11 +9,11 @@ class ArduinoRelay {
 
     protected:
 
-        uint8_t _reverseState   = false;
+        int8_t  _pin            = -1;
         uint8_t _on             = HIGH;
         uint8_t _off            = LOW;
+        uint8_t _reverseState   = false;
         uint8_t _state          = _off;
-        int8_t  _pin            = -1;
 
     public:
         
