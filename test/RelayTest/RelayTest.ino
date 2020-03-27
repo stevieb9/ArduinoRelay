@@ -2,10 +2,12 @@
 #include "CycleTimerRelay.h"
 #include "TemperatureRelay.h"
 #include "HumidityRelay.h"
+#include "SwitchRelay.h"
 
 #define TP          D7
 #define HP          D6
 #define CP          D5
+#define SP          D4
 
 #define TEMP        78
 #define HUM         60
@@ -17,13 +19,16 @@ int16_t fail = 0;
 TemperatureRelay temp(TP, TEMP);
 HumidityRelay hum(HP, HUM);
 CycleTimerRelay cyc(CP, CYC_ON, CYC_OFF);
+SwitchRelay sw(SP);
 
 void setup() {
     Serial.begin(9600);
+    Serial.print(F("\n"));
 
-    cycleRelayTests();
+    switchRelayTests();
     tempRelayTests();
     humidityRelayTests();
+    cycleRelayTests();
 
     doneTesting();
 }
@@ -33,7 +38,16 @@ void doneTesting () {
         Serial.print(F("\n\n\n"));
         Serial.println(F("ALL TESTS OK"));
     }
+    else {
+        Serial.print(F("\n\n\n"));
+        Serial.print(fail);
+        Serial.println(F(" TESTS FAILED"));
+    }
+}
 
+void cycTest (uint8_t state, const __FlashStringHelper* msg) {
+    is (cyc.state() == state, msg);
+    is (digitalRead(CP) == state, msg);
 }
 
 void humTest (uint8_t state, const __FlashStringHelper* msg) {
@@ -59,19 +73,72 @@ void is (bool arg, const __FlashStringHelper* msg) {
 //    Serial.println(msg);
 }
 
+void switchRelayTests () {
+    // SWITCH RELAY
+
+    Serial.println(F("SWITCH RELAY"));
+
+    sw.turnOn();
+    is (digitalRead(SP) == HIGH, F("Switch turnOn()"));
+    is (digitalRead(SP) == sw.on(), F("Switch turnOn() on()"));
+
+    sw.turnOff();
+    is (digitalRead(SP) == LOW, F("Switch turnOff()"));
+    is (digitalRead(SP) == sw.off(), F("Switch turnOff() off()"));
+
+    is (sw.reverse(true) == true, F("Switch reverse"));
+
+    sw.turnOn();
+    is (digitalRead(SP) == LOW, F("Switch turnOn() LOw"));
+    is (digitalRead(SP) == sw.on(), F("Switch turnOn() LOW on()"));
+
+    sw.turnOff();
+    is (digitalRead(SP) == HIGH, F("Switch turnOff() HIGH"));
+    is (digitalRead(SP) == sw.off(), F("Switch turnOff() HIGH off()"));
+
+    is (sw.reverse(false) == false, F("Switch un-reverse"));
+
+    sw.turnOff();
+    is (digitalRead(SP) == LOW, F("Switch turnOff()"));
+    is (digitalRead(SP) == sw.off(), F("Switch turnOff() off()"));
+}
+
 void cycleRelayTests () {
     // CYCLE RELAY
 
-    //is (cyc.name("cyc") == (char*)F("cyc"), F("Cyc name"));
+    Serial.println(F("CYCLE RELAY"));
 
     is (cyc.reverse(true) == true, F("Cyc rev true"));
     is (cyc.reverse(false) == false, F("Cyc rev false"));
+
+    cyc.process();
+    cycTest(HIGH, F("On initial"));
+    delay(1000);
+    cyc.process();
+    cycTest(LOW, F("Off initial"));
+
+    is (cyc.onTime(5000) == 5000, F("cyc onTime() 5000"));
+    is (cyc.offTime(5000) == 5000, F("cyc offTime() 5000"));
+
+    is (cyc.reverse(true) == true, F("cyc reverse"));
+    is (cyc.onTime(1000) == 1000, F("cyc onTime() 1000"));
+    is (cyc.offTime(1000) == 1000, F("cyc offTime() 1000"));
+
+    delay(500);
+    cyc.process();
+    cycTest(LOW, F("On 1000 rev"));
+    delay(1010);
+    cyc.process();
+    cycTest(HIGH, F("Off 1000 rev"));
+
+    is (cyc.reverse(false) == false, F("cyc reverse false"));
+
 }
 
 void humidityRelayTests () {
     // HUMIDITY RELAY
 
-    //is (hum.name("hum") == (char*)F("hum"), F("Hum name"));
+    Serial.println(F("HUMIDITY RELAY"));
 
     is (hum.reverse(true) == true, F("Hum rev true"));
     is (hum.reverse(false) == false, F("Hum rev false"));
@@ -154,7 +221,7 @@ void humidityRelayTests () {
 void tempRelayTests () {
     // TEMP RELAY
 
-    //is (temp.name("temp") == (char*)F("temp"), F("Temp name"));
+    Serial.println(F("TEMPERATURE RELAY"));
 
     is (temp.reverse(true) == true, F("Temp rev true"));
     is (temp.reverse(false) == false, F("Temp rev false"));
