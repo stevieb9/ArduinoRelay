@@ -10,11 +10,6 @@
 #define RELAY_CYCLE     4
 #define RELAY_SWITCH    5
 
-#define RELAY_MODE_COOL       0
-#define RELAY_MODE_HEAT       1
-#define RELAY_MODE_HUMIDIFY   0
-#define RELAY_MODE_DEHUMIDIFY 1
-
 using namespace std;
 
 class ArduinoRelay {
@@ -23,8 +18,7 @@ class ArduinoRelay {
 
         void processTempRelay(float tempF);
         void processHumidRelay(float humidity);
-
-    protected:
+        void processCycleRelay();
 
         int8_t  _type           = -1;
         int8_t  _pin            = -1;
@@ -32,7 +26,6 @@ class ArduinoRelay {
         uint8_t _off            = LOW;
         uint8_t _reverseState   = false;
         uint8_t _state          = _off;
-        uint8_t _mode           = 0;
         uint8_t _factor         = 1;
 
         /* Temp relay */
@@ -56,19 +49,18 @@ class ArduinoRelay {
 
     public:
         
-        ArduinoRelay (int8_t type) { _type = type; }
+        explicit ArduinoRelay (int8_t type) { _type = type; }
         ArduinoRelay (int8_t type, int8_t pin) { _type = type; _pin = pin; pinMode(_pin, OUTPUT); }
+        ArduinoRelay (int8_t type, int8_t pin, uint8_t value); // temp/hum
         ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
 
         ArduinoRelay(int8_t type, int8_t pin, unsigned long onTime, unsigned long offTime);
-        ArduinoRelay(int8_t type, unsigned long onTime, unsigned long offTime);
+//        ArduinoRelay(int8_t type, unsigned long onTime, unsigned long offTime);
 
-        void process ();
-        void process (float value);
+        void process ();                // cycle
+        void process (double value);    // cool, heat, hum, dehum, sw
 
         int8_t type () { return _type; }
-
-        uint8_t mode () { return _mode; }
 
         int8_t pin () { return _pin; }
         int8_t pin (int8_t pin) { _pin = pin; return _pin; }
@@ -88,7 +80,7 @@ class ArduinoRelay {
         /* Temperature Relay */
 
         uint8_t baseTemp () { return _temp; }
-        uint8_t baseTemp (uint8_t t) { _temp = t; return _temp; }
+        uint8_t baseTemp (uint8_t t);
 
         uint8_t onTemp () { return _onTemp; }
         uint8_t onTemp (uint8_t onTemp) { _onTemp = onTemp; return _onTemp; }
@@ -96,16 +88,13 @@ class ArduinoRelay {
         uint8_t offTemp () { return _offTemp; }
         uint8_t offTemp (uint8_t offTemp) { _offTemp = offTemp; return _offTemp; }
 
-        uint8_t mode ();
-        uint8_t mode (uint8_t mode);
-
         uint8_t factor () { return _factor; }
         uint8_t factor (uint8_t factor) { _factor = factor; return _factor; }
 
         /* Humidity Relay */
 
         uint8_t baseHumidity () { return _humidity; }
-        uint8_t baseHumidity (uint8_t humidity) { _humidity = humidity; return _humidity; }
+        uint8_t baseHumidity (uint8_t humidity);
 
         uint8_t onHum () { return _onHum; }
         uint8_t onHum (uint8_t onHum) { _onHum = onHum; return _onHum; }
@@ -126,8 +115,6 @@ class ArduinoRelay {
 
         unsigned long offTime () { return _offTime; }
         unsigned long offTime (unsigned long millis) { _offTime = millis; return _offTime; }
-
-
 };
 
 #endif
