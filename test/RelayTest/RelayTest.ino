@@ -1,7 +1,9 @@
 #include "ArduinoRelay.h"
 
-#define TP          D7
-#define HP          D6
+#define coolP       D0
+#define heatP       D7
+#define humP        D6
+#define HP          D5
 #define CP          D5
 #define SP          D4
 
@@ -12,9 +14,10 @@
 
 int16_t fail = 0;
 
-ArduinoRelay cool(RELAY_COOL, TP, TEMP);
-ArduinoRelay heat(RELAY_HEAT, TP, TEMP);
-ArduinoRelay hum(RELAY_HUMID, HP, HUM);
+ArduinoRelay cool(RELAY_COOL, coolP, TEMP);
+ArduinoRelay heat(RELAY_HEAT, heatP, TEMP);
+ArduinoRelay hum(RELAY_HUMID, humP, HUM);
+
 ArduinoRelay dehum(RELAY_DEHUMID, HP, HUM);
 ArduinoRelay cyc(RELAY_CYCLE, CP, CYC_ON, CYC_OFF);
 ArduinoRelay sw(RELAY_SWITCH, SP);
@@ -23,7 +26,9 @@ void setup() {
     Serial.begin(9600);
     Serial.print(F("\n"));
 
-    coolRelayTests();
+    // coolRelayTests();
+    // heatRelayTests();
+    humidityRelayTests();
     /*
     switchRelayTests();
     humidityRelayTests();
@@ -51,12 +56,17 @@ void cycTest (uint8_t state, const __FlashStringHelper* msg) {
 
 void humTest (uint8_t state, const __FlashStringHelper* msg) {
     is (hum.state() == state, msg);
-    is (digitalRead(HP) == state, msg);
+    is (digitalRead(humP) == state, msg);
 }
 
-void tempTest (uint8_t state, const __FlashStringHelper* msg) {
-    is (temp.state() == state, msg);
-    is (digitalRead(TP) == state, msg);
+void coolTest (uint8_t state, const __FlashStringHelper* msg) {
+    is (cool.state() == state, msg);
+    is (digitalRead(coolP) == state, msg);
+}
+
+void heatTest (uint8_t state, const __FlashStringHelper* msg) {
+    is (heat.state() == state, msg);
+    is (digitalRead(heatP) == state, msg);
 }
 
 void loop() {
@@ -68,8 +78,6 @@ void is (bool arg, const __FlashStringHelper* msg) {
         Serial.print(F("FAIL: "));
         Serial.println(msg);
     }
-//    arg ? Serial.print(F("OK:   ")) : Serial.println(F("FAIL: "));
-//    Serial.println(msg);
 }
 
 void switchRelayTests () {
@@ -142,18 +150,12 @@ void humidityRelayTests () {
     is (hum.reverse(true) == true, F("Hum rev true"));
     is (hum.reverse(false) == false, F("Hum rev false"));
 
-    is (hum.mode() == MODE_HUMIDIFY, F("Hum mode default"));
-    is (hum.mode(MODE_DEHUMIDIFY) == MODE_DEHUMIDIFY, F("Hum mode dehum"));
-    is (hum.mode(MODE_HUMIDIFY) == MODE_HUMIDIFY, F("Hum mode hum"));
     is (hum.factor() == 1, F("Hum factor default"));
     is (hum.factor(3) == 3, F("Hum factor 3"));
     is (hum.factor(1) == 1, F("Hum factor 1"));
+
     is (hum.onHum() == HUM, F("Hum onHum()"));
-    is (hum.offHum() == HUM-1, F("Hum offHum()"));
-    is (hum.mode(MODE_DEHUMIDIFY) == MODE_DEHUMIDIFY, F("Hum mode dehumidify"));
-    is (hum.onHum() == HUM, F("Hum dehum onHum()"));
-    is (hum.offHum() == HUM+1, F("Hum dehum offHum()"));
-    is (hum.mode(MODE_HUMIDIFY) == MODE_HUMIDIFY, F("Hum mode humidify"));
+    is (hum.offHum() == HUM+1, F("Hum offHum()"));
 
     humTest(LOW, F("Default"));
 
@@ -163,24 +165,20 @@ void humidityRelayTests () {
     hum.process(59.9);
     humTest(HIGH, F("Hum 59.9"));
 
-    hum.process(60.5);
-    humTest(LOW, F("Hum 60.5"));
+    hum.process(61.5);
+    humTest(LOW, F("Hum 61.5"));
 
     hum.process(61.1);
     humTest(LOW, F("Hum 61.1"));
 
-    hum.reverse(true);
-
     hum.process(60.0);
-    humTest(HIGH, F("Hum 60.0 rev"));
+    humTest(LOW, F("Hum 60.0 rev"));
 
     hum.process(59.9);
-    humTest(LOW, F("Hum 59.9 rev"));
+    humTest(HIGH, F("Hum 59.9 rev"));
 
     hum.process(61.1);
-    humTest(HIGH, F("Hum 60.5 rev"));
-
-    hum.reverse(false);
+    humTest(LOW, F("Hum 61.1 rev"));
 
     hum.process(61.1);
     humTest(LOW, F("Hum 61.1"));
@@ -191,114 +189,25 @@ void humidityRelayTests () {
     hum.process(66);
     humTest(LOW, F("Hum 66.0"));
 
-    hum.mode(MODE_DEHUMIDIFY);
-    is (hum.mode() == MODE_DEHUMIDIFY, F("Hum mode dehum"));
-
     hum.process(62.2);
-    humTest(HIGH, F("Dehum 62.2"));
+    humTest(LOW, F("Hum 62.2"));
 
     hum.process(59.9);
-    humTest(LOW, F("Dehum 59.9"));
+    humTest(HIGH, F("Hum 59.9"));
 
     hum.process(76.9);
-    humTest(HIGH, F("Dehum 76.9"));
-
-    hum.reverse(true);
+    humTest(LOW, F("Hum 76.9"));
 
     hum.process(62.2);
-    humTest(LOW, F("Dehum 62.2 rev"));
+    humTest(LOW, F("Hum 62.2"));
 
     hum.process(59.9);
-    humTest(HIGH, F("Dehum 59.9 rev"));
+    humTest(HIGH, F("Hum 59.9"));
 
     hum.process(76.9);
-    humTest(LOW, F("Dehum 76.9 rev"));
+    humTest(LOW, F("Hum 76.9"));
 
     hum.reverse(false);
-}
-
-void tempRelayTests () {
-    // TEMP RELAY
-
-    Serial.println(F("TEMPERATURE RELAY"));
-
-    is (cool.reverse(true) == true, F("Cool rev true"));
-    is (cool.reverse(false) == false, F("Cool rev false"));
-
-
-    is (temp.mode() == MODE_COOL, F("Temp mode default"));
-    is (temp.mode(MODE_HEAT) == MODE_HEAT, F("Temp mode heat"));
-    is (temp.mode(MODE_COOL) == MODE_COOL, F("Temp mode cool"));
-    is (temp.factor() == 1, F("Temp factor default"));
-    is (temp.factor(3) == 3, F("Temp factor 3"));
-    is (temp.factor(1) == 1, F("Temp factor 1"));
-    is (temp.onTemp() == TEMP, F("Temp onTemp()"));
-    is (temp.offTemp() == TEMP-1, F("Temp offTemp()"));
-    is (temp.mode(MODE_HEAT) == MODE_HEAT, F("Temp mode heat"));
-    is (temp.onTemp() == TEMP, F("Temp heat onTemp()"));
-    is (temp.offTemp() == TEMP+1, F("Temp heat offTemp()"));
-    is (temp.mode(MODE_COOL) == MODE_COOL, F("Temp mode cool"));
-
-    tempTest(LOW, F("Default"));
-
-    temp.process(78.0);
-    tempTest(LOW, F("Temp 78.0"));
-
-    temp.process(78.1);
-    tempTest(HIGH, F("Temp 78.1"));
-
-    temp.process(77.5);
-    tempTest(HIGH, F("Temp 77.5"));
-
-    temp.process(76.9);
-    tempTest(LOW, F("Temp 76.9"));
-
-    temp.reverse(true);
-
-    temp.process(78.1);
-    tempTest(LOW, F("Temp 78.1 rev"));
-
-    temp.process(77.5);
-    tempTest(LOW, F("Temp 77.5 rev"));
-
-    temp.process(76.9);
-    tempTest(HIGH, F("Temp 76.9 rev"));
-
-    temp.reverse(false);
-
-    temp.process(78.1);
-    tempTest(HIGH, F("Temp 78.1"));
-
-    temp.process(77.5);
-    tempTest(HIGH, F("Temp 77.5"));
-
-    temp.process(76.9);
-    tempTest(LOW, F("Temp 76.9"));
-
-    temp.mode(MODE_HEAT);
-    is (temp.mode() == MODE_HEAT, F("Temp mode heat"));
-
-    temp.process(77.9);
-    tempTest(HIGH, F("Heat 77.9"));
-
-    temp.process(81.5);
-    tempTest(LOW, F("Heat 81.5"));
-
-    temp.process(76.9);
-    tempTest(HIGH, F("Heat 76.9"));
-
-    temp.reverse(true);
-
-    temp.process(77.9);
-    tempTest(LOW, F("Heat 77.9 rev"));
-
-    temp.process(81.5);
-    tempTest(HIGH, F("Heat 81.5 rev"));
-
-    temp.process(76.9);
-    tempTest(LOW, F("Heat 76.9 rev"));
-
-    temp.reverse(false);
 }
 
 void coolRelayTests () {
@@ -309,70 +218,103 @@ void coolRelayTests () {
     is (cool.reverse(true) == true, F("Cool rev true"));
     is (cool.reverse(false) == false, F("Cool rev false"));
 
-    is (cool.factor() == 1, F("Temp factor default"));
-    is (cool.factor(3) == 3, F("Temp factor 3"));
-    is (cool.factor(1) == 1, F("Temp factor 1"));
-    is (cool.onTemp() == TEMP, F("Temp onTemp()"));
-    is (cool.offTemp() == TEMP-1, F("Temp offTemp()"));
+    is (cool.factor() == 1, F("Cool factor default"));
+    is (cool.factor(3) == 3, F("Cool factor 3"));
+    is (cool.factor(1) == 1, F("Cool factor 1"));
+    is (cool.onTemp() == TEMP, F("Cool onTemp()"));
+    is (cool.offTemp() == TEMP-1, F("Cool offTemp()"));
 
-    tempTest(LOW, F("Default"));
+    Serial.print("ONTEMP: ");
+    Serial.println(cool.onTemp());
+
+    coolTest(LOW, F("Default"));
 
     cool.process(78.0);
-    tempTest(LOW, F("Temp 78.0"));
+    coolTest(LOW, F("Cool 78.0"));
 
     cool.process(78.1);
-    tempTest(HIGH, F("Temp 78.1"));
+    coolTest(HIGH, F("Cool 78.1"));
 
     cool.process(77.5);
-    tempTest(HIGH, F("Temp 77.5"));
+    coolTest(HIGH, F("Cool 77.5"));
 
     cool.process(76.9);
-    tempTest(LOW, F("Temp 76.9"));
+    coolTest(LOW, F("Cool 76.9"));
 
     cool.reverse(true);
 
     cool.process(78.1);
-    tempTest(LOW, F("Temp 78.1 rev"));
+    coolTest(LOW, F("Cool 78.1 rev"));
 
     cool.process(77.5);
-    tempTest(LOW, F("Temp 77.5 rev"));
+    coolTest(LOW, F("Cool 77.5 rev"));
 
     cool.process(76.9);
-    tempTest(HIGH, F("Temp 76.9 rev"));
+    coolTest(HIGH, F("Cool 76.9 rev"));
 
     cool.reverse(false);
 
     cool.process(78.1);
-    tempTest(HIGH, F("Temp 78.1"));
+    coolTest(HIGH, F("Cool 78.1"));
 
     cool.process(77.5);
-    tempTest(HIGH, F("Temp 77.5"));
+    coolTest(HIGH, F("Cool 77.5"));
 
     cool.process(76.9);
-    tempTest(LOW, F("Temp 76.9"));
-
-    cool.mode(MODE_HEAT);
-    is (cool.mode() == MODE_HEAT, F("Temp mode heat"));
-
-    cool.process(77.9);
-    tempTest(HIGH, F("Heat 77.9"));
-
-    cool.process(81.5);
-    tempTest(LOW, F("Heat 81.5"));
-
-    cool.process(76.9);
-    tempTest(HIGH, F("Heat 76.9"));
-
-    cool.reverse(true);
-
-    cool.process(77.9);
-    tempTest(LOW, F("Heat 77.9 rev"));
-
-    cool.process(81.5);
-    tempTest(HIGH, F("Heat 81.5 rev"));
-
-    cool.process(76.9);
-    tempTest(LOW, F("Heat 76.9 rev"));
+    coolTest(LOW, F("Cool 76.9"));
 
     cool.reverse(false);
+}
+
+void heatRelayTests () {
+    // TEMP RELAY
+
+    Serial.println(F("HEAT RELAY"));
+
+    is (heat.reverse(true) == true, F("Heat rev true"));
+    is (heat.reverse(false) == false, F("Heat rev false"));
+
+    is (heat.factor() == 1, F("Heat factor default"));
+    is (heat.factor(3) == 3, F("Heat factor 3"));
+    is (heat.factor(1) == 1, F("Heat factor 1"));
+    is (heat.onTemp() == TEMP, F("Heat onTemp()"));
+    is (heat.offTemp() == TEMP+1, F("Heat offTemp()"));
+
+    heatTest(LOW, F("Default"));
+
+    heat.process(78.0);
+    heatTest(LOW, F("Heat 78.0"));
+
+    heat.process(78.1);
+    heatTest(LOW, F("Heat 78.1"));
+
+    heat.process(77.5);
+    heatTest(HIGH, F("Heat 77.5"));
+
+    heat.process(76.9);
+    heatTest(HIGH, F("Heat 76.9"));
+
+    heat.reverse(true);
+
+    heat.process(78.1);
+    heatTest(HIGH, F("Heat 78.1 rev"));
+
+    heat.process(77.5);
+    heatTest(LOW, F("Heat 77.5 rev"));
+
+    heat.process(76.9);
+    heatTest(LOW, F("Heat 76.9 rev"));
+
+    heat.reverse(false);
+
+    heat.process(78.1);
+    heatTest(LOW, F("Heat 78.1"));
+
+    heat.process(77.5);
+    heatTest(HIGH, F("Heat 77.5"));
+
+    heat.process(76.9);
+    heatTest(HIGH, F("Heat 76.9"));
+
+    heat.reverse(false);
 }
