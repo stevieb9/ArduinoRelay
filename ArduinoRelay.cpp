@@ -58,7 +58,7 @@ void ArduinoRelay::process(float value) {
 
 void ArduinoRelay::processHumidRelay (float humidity) {
 
-    if (mode() == MODE_HUMIDIFY) {
+    if (type() == RELAY_HUMID) {
         // Turn the outlet on
 
         if (state() == off() && humidity < (float)onHum()) {
@@ -74,7 +74,7 @@ void ArduinoRelay::processHumidRelay (float humidity) {
         }
     }
 
-    else if (mode() == MODE_DEHUMIDIFY) {
+    else if (type() == RELAY_DEHUMID) {
         // Turn the outlet on
 
         if (state() == off() && humidity > (float)onHum()) {

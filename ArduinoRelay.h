@@ -3,10 +3,12 @@
 
 #include "Arduino.h"
 
-#define RELAY_TEMP      0
-#define RELAY_HUMID     1
-#define RELAY_CYCLE     2
-#define RELAY_SWITCH    3
+#define RELAY_COOL      0
+#define RELAY_HEAT      1
+#define RELAY_HUMID     2
+#define RELAY_DEHUMID   3
+#define RELAY_CYCLE     4
+#define RELAY_SWITCH    5
 
 #define RELAY_MODE_COOL       0
 #define RELAY_MODE_HEAT       1
@@ -58,8 +60,8 @@ class ArduinoRelay {
         ArduinoRelay (int8_t type, int8_t pin) { _type = type; _pin = pin; pinMode(_pin, OUTPUT); }
         ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
 
-        //CycleTimerRelay(int8_t pin, unsigned long onTime, unsigned long offTime);
-        //CycleTimerRelay(unsigned long onTime, unsigned long offTime);
+        ArduinoRelay(int8_t type, int8_t pin, unsigned long onTime, unsigned long offTime);
+        ArduinoRelay(int8_t type, unsigned long onTime, unsigned long offTime);
 
         void process ();
         void process (float value);
