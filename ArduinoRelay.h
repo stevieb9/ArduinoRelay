@@ -16,9 +16,11 @@ class ArduinoRelay {
 
     private:
 
-        void processTempRelay(float tempF);
-        void processHumidRelay(float humidity);
-        void processCycleRelay();
+        void processTempRelay   (float tempF);
+        void processHumidRelay  (float humidity);
+        void processCycleRelay  ();
+
+        /* Core */
 
         int8_t  _type           = -1;
         int8_t  _pin            = -1;
@@ -50,12 +52,15 @@ class ArduinoRelay {
     public:
         
         explicit ArduinoRelay (int8_t type) { _type = type; }
-        ArduinoRelay (int8_t type, int8_t pin) { _type = type; _pin = pin; pinMode(_pin, OUTPUT); }
+        ArduinoRelay (int8_t type, int8_t pin) {
+            _type = type;
+            _pin = pin;
+            pinMode(_pin, OUTPUT);
+        }
         ArduinoRelay (int8_t type, int8_t pin, uint8_t value); // temp/hum
-        ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
+        ArduinoRelay (int8_t type, int8_t pin, unsigned long onTime, unsigned long offTime);
 
-        ArduinoRelay(int8_t type, int8_t pin, unsigned long onTime, unsigned long offTime);
-//        ArduinoRelay(int8_t type, unsigned long onTime, unsigned long offTime);
+        ~ArduinoRelay () { if (pin() != -1){ pinMode(pin(), INPUT); } }
 
         void process ();                // cycle
         void process (double value);    // cool, heat, hum, dehum, sw
@@ -70,6 +75,9 @@ class ArduinoRelay {
 
         uint8_t reverse () { return _reverseState; }
         uint8_t reverse (uint8_t rev);
+
+        uint8_t factor () { return _factor; }
+        uint8_t factor (uint8_t factor) { _factor = factor; return _factor; }
 
         uint8_t state () { return _state; }
         uint8_t state (uint8_t state) { _state = state; return _state; }
@@ -87,9 +95,6 @@ class ArduinoRelay {
 
         uint8_t offTemp () { return _offTemp; }
         uint8_t offTemp (uint8_t offTemp) { _offTemp = offTemp; return _offTemp; }
-
-        uint8_t factor () { return _factor; }
-        uint8_t factor (uint8_t factor) { _factor = factor; return _factor; }
 
         /* Humidity Relay */
 

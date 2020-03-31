@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "ArduinoRelay.h"
 
-ArduinoRelay::ArduinoRelay(int8_t type, int8_t pin, uint8_t value) {
+ArduinoRelay::ArduinoRelay (int8_t type, int8_t pin, uint8_t value) {
     _type = type;
     _pin = pin;
 
@@ -19,11 +19,6 @@ ArduinoRelay::ArduinoRelay (int8_t type, int8_t pin, unsigned long onTime, unsig
     _onTime = onTime;
     _offTime = offTime;
 }
-
-//ArduinoRelay::ArduinoRelay (int8_t type, unsigned long onTime, unsigned long offTime) {
-//    _onTime = onTime;
-//    _offTime = offTime;
-//}
 
 uint8_t ArduinoRelay::reverse (uint8_t set) {
     if (set) {
@@ -117,7 +112,7 @@ void ArduinoRelay::processTempRelay (float tempF) {
             turnOn();
         }
 
-            // Turn the outlet off
+        // Turn the outlet off
 
         else if (state() == on() && tempF < (float)offTemp()) {
             state(off());
@@ -133,7 +128,7 @@ void ArduinoRelay::processTempRelay (float tempF) {
             turnOn();
         }
 
-            // Turn the outlet off
+        // Turn the outlet off
 
         else if (state() == on() && tempF > (float)offTemp()) {
             state(off());
@@ -161,6 +156,7 @@ void ArduinoRelay::processHumidRelay (float humidity) {
     }
 
     else if (type() == RELAY_DEHUMID) {
+
         // Turn the outlet on
 
         if (state() == off() && humidity > (float)onHum()) {
@@ -168,7 +164,7 @@ void ArduinoRelay::processHumidRelay (float humidity) {
             turnOn();
         }
 
-            // Turn the outlet off
+        // Turn the outlet off
 
         else if (state() == on() && humidity < (float)offHum()) {
             state(off());

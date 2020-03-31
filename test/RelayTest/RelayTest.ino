@@ -14,9 +14,9 @@
 
 int16_t fail = 0;
 
-ArduinoRelay cool(RELAY_COOL, coolP, TEMP);
-ArduinoRelay heat(RELAY_HEAT, heatP, TEMP);
-ArduinoRelay hum(RELAY_HUMID, humP, HUM);
+ArduinoRelay cool (RELAY_COOL, coolP, TEMP);
+ArduinoRelay heat (RELAY_HEAT, heatP, TEMP);
+ArduinoRelay hum  (RELAY_HUMID, humP, HUM);
 
 ArduinoRelay dehum(RELAY_DEHUMID, HP, HUM);
 ArduinoRelay cyc(RELAY_CYCLE, CP, CYC_ON, CYC_OFF);
@@ -26,8 +26,8 @@ void setup() {
     Serial.begin(9600);
     Serial.print(F("\n"));
 
-    // coolRelayTests();
-    // heatRelayTests();
+    coolRelayTests();
+    heatRelayTests();
     humidityRelayTests();
     /*
     switchRelayTests();
@@ -223,9 +223,6 @@ void coolRelayTests () {
     is (cool.factor(1) == 1, F("Cool factor 1"));
     is (cool.onTemp() == TEMP, F("Cool onTemp()"));
     is (cool.offTemp() == TEMP-1, F("Cool offTemp()"));
-
-    Serial.print("ONTEMP: ");
-    Serial.println(cool.onTemp());
 
     coolTest(LOW, F("Default"));
 
