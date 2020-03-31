@@ -192,7 +192,7 @@ void ArduinoRelay::processCycleRelay () {
         turnOn();
     }
 
-        // Turn the outlet off
+    // Turn the outlet off
 
     else if (state() == on() && currentMillis - prevMillis() >= onTime()) {
         state(off());
