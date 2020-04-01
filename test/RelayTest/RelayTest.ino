@@ -23,17 +23,15 @@ ArduinoRelay sw(RELAY_SWITCH, swP);
 
 void setup() {
     Serial.begin(9600);
-    Serial.print(F("\n"));
+    Serial.print(F("\n\n"));
 
     cycleRelayTests();
     coolRelayTests();
     heatRelayTests();
     humidityRelayTests();
     deHumidityRelayTests();
-
-    /*
     switchRelayTests();
-    */
+
     doneTesting();
 }
 
