@@ -3,9 +3,9 @@
 #define coolP       D0
 #define heatP       D7
 #define humP        D6
-#define dehumP      D5
-#define CP          D5
-#define SP          D4
+#define dehumP      D1
+#define cycP        D5
+#define swP         D3
 
 #define TEMP        78
 #define HUM         60
@@ -18,22 +18,21 @@ ArduinoRelay cool(RELAY_COOL, coolP, TEMP);
 ArduinoRelay heat(RELAY_HEAT, heatP, TEMP);
 ArduinoRelay hum(RELAY_HUMID, humP, HUM);
 ArduinoRelay deHum(RELAY_DEHUMID, dehumP, HUM);
-
-ArduinoRelay cyc(RELAY_CYCLE, CP, CYC_ON, CYC_OFF);
-ArduinoRelay sw(RELAY_SWITCH, SP);
+ArduinoRelay cyc(RELAY_CYCLE, cycP, CYC_ON, CYC_OFF);
+ArduinoRelay sw(RELAY_SWITCH, swP);
 
 void setup() {
     Serial.begin(9600);
     Serial.print(F("\n"));
 
+    cycleRelayTests();
     coolRelayTests();
     heatRelayTests();
     humidityRelayTests();
     deHumidityRelayTests();
+
     /*
     switchRelayTests();
-    humidityRelayTests();
-    cycleRelayTests();
     */
     doneTesting();
 }
@@ -52,7 +51,7 @@ void doneTesting () {
 
 void cycTest (uint8_t state, const __FlashStringHelper* msg) {
     is (cyc.state() == state, msg);
-    is (digitalRead(CP) == state, msg);
+    is (digitalRead(cycP) == state, msg);
 }
 
 void humTest (uint8_t state, const __FlashStringHelper* msg) {
@@ -92,28 +91,28 @@ void switchRelayTests () {
     Serial.println(F("SWITCH RELAY"));
 
     sw.turnOn();
-    is (digitalRead(SP) == HIGH, F("Switch turnOn()"));
-    is (digitalRead(SP) == sw.on(), F("Switch turnOn() on()"));
+    is (digitalRead(swP) == HIGH, F("Switch turnOn()"));
+    is (digitalRead(swP) == sw.on(), F("Switch turnOn() on()"));
 
     sw.turnOff();
-    is (digitalRead(SP) == LOW, F("Switch turnOff()"));
-    is (digitalRead(SP) == sw.off(), F("Switch turnOff() off()"));
+    is (digitalRead(swP) == LOW, F("Switch turnOff()"));
+    is (digitalRead(swP) == sw.off(), F("Switch turnOff() off()"));
 
     is (sw.reverse(true) == true, F("Switch reverse"));
 
     sw.turnOn();
-    is (digitalRead(SP) == LOW, F("Switch turnOn() LOw"));
-    is (digitalRead(SP) == sw.on(), F("Switch turnOn() LOW on()"));
+    is (digitalRead(swP) == LOW, F("Switch turnOn() LOw"));
+    is (digitalRead(swP) == sw.on(), F("Switch turnOn() LOW on()"));
 
     sw.turnOff();
-    is (digitalRead(SP) == HIGH, F("Switch turnOff() HIGH"));
-    is (digitalRead(SP) == sw.off(), F("Switch turnOff() HIGH off()"));
+    is (digitalRead(swP) == HIGH, F("Switch turnOff() HIGH"));
+    is (digitalRead(swP) == sw.off(), F("Switch turnOff() HIGH off()"));
 
     is (sw.reverse(false) == false, F("Switch un-reverse"));
 
     sw.turnOff();
-    is (digitalRead(SP) == LOW, F("Switch turnOff()"));
-    is (digitalRead(SP) == sw.off(), F("Switch turnOff() off()"));
+    is (digitalRead(swP) == LOW, F("Switch turnOff()"));
+    is (digitalRead(swP) == sw.off(), F("Switch turnOff() off()"));
 }
 
 void cycleRelayTests () {
@@ -126,7 +125,7 @@ void cycleRelayTests () {
 
     cyc.process();
     cycTest(HIGH, F("On initial"));
-    delay(1000);
+    delay(1010);
     cyc.process();
     cycTest(LOW, F("Off initial"));
 
@@ -145,6 +144,9 @@ void cycleRelayTests () {
     cycTest(HIGH, F("Off 1000 rev"));
 
     is (cyc.reverse(false) == false, F("cyc reverse false"));
+
+    is (cyc.onTime(5000) == 5000, F("cyc onTime() 5000"));
+    is (cyc.offTime(5000) == 5000, F("cyc offTime() 5000"));
 
 }
 

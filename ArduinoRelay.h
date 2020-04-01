@@ -50,7 +50,7 @@ class ArduinoRelay {
         unsigned long _pMillis  = 0;
 
     public:
-        
+
         explicit ArduinoRelay (int8_t type) { _type = type; }
         ArduinoRelay (int8_t type, int8_t pin) {
             _type = type;

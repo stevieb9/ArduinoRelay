@@ -16,8 +16,12 @@ ArduinoRelay::ArduinoRelay (int8_t type, int8_t pin, uint8_t value) {
 }
 
 ArduinoRelay::ArduinoRelay (int8_t type, int8_t pin, unsigned long onTime, unsigned long offTime) {
-    _onTime = onTime;
-    _offTime = offTime;
+    _type       = type;
+    _pin        = pin;
+    _onTime     = onTime;
+    _offTime    = offTime;
+
+    pinMode(_pin, OUTPUT);
 }
 
 uint8_t ArduinoRelay::reverse (uint8_t set) {
@@ -174,7 +178,6 @@ void ArduinoRelay::processHumidRelay (float humidity) {
 }
 
 void ArduinoRelay::processCycleRelay () {
-
     if (prevMillis() == 0) {
         prevMillis(millis());
     }
@@ -183,7 +186,7 @@ void ArduinoRelay::processCycleRelay () {
 
     // Turn the outlet on
 
-    if (state() == off() && currentMillis - prevMillis() >= offTime() || ! init()) {
+    if ((state() == off() && currentMillis - prevMillis() >= offTime()) || ! init()) {
         if (! init()) {
             init(true);
         }
