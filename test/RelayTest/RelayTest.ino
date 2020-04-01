@@ -3,7 +3,7 @@
 #define coolP       D0
 #define heatP       D7
 #define humP        D6
-#define HP          D5
+#define dehumP      D5
 #define CP          D5
 #define SP          D4
 
@@ -14,11 +14,11 @@
 
 int16_t fail = 0;
 
-ArduinoRelay cool (RELAY_COOL, coolP, TEMP);
-ArduinoRelay heat (RELAY_HEAT, heatP, TEMP);
-ArduinoRelay hum  (RELAY_HUMID, humP, HUM);
+ArduinoRelay cool(RELAY_COOL, coolP, TEMP);
+ArduinoRelay heat(RELAY_HEAT, heatP, TEMP);
+ArduinoRelay hum(RELAY_HUMID, humP, HUM);
+ArduinoRelay deHum(RELAY_DEHUMID, dehumP, HUM);
 
-ArduinoRelay dehum(RELAY_DEHUMID, HP, HUM);
 ArduinoRelay cyc(RELAY_CYCLE, CP, CYC_ON, CYC_OFF);
 ArduinoRelay sw(RELAY_SWITCH, SP);
 
@@ -29,6 +29,7 @@ void setup() {
     coolRelayTests();
     heatRelayTests();
     humidityRelayTests();
+    deHumidityRelayTests();
     /*
     switchRelayTests();
     humidityRelayTests();
@@ -57,6 +58,11 @@ void cycTest (uint8_t state, const __FlashStringHelper* msg) {
 void humTest (uint8_t state, const __FlashStringHelper* msg) {
     is (hum.state() == state, msg);
     is (digitalRead(humP) == state, msg);
+}
+
+void deHumTest (uint8_t state, const __FlashStringHelper* msg) {
+    is (deHum.state() == state, msg);
+    is (digitalRead(dehumP) == state, msg);
 }
 
 void coolTest (uint8_t state, const __FlashStringHelper* msg) {
@@ -208,6 +214,78 @@ void humidityRelayTests () {
     humTest(LOW, F("Hum 76.9"));
 
     hum.reverse(false);
+}
+
+void deHumidityRelayTests () {
+    // DEHUMIDITY RELAY
+
+    Serial.println(F("DE-HUMIDITY RELAY"));
+
+    is (deHum.reverse(true) == true, F("Dehum rev true"));
+    is (deHum.reverse(false) == false, F("Dehum rev false"));
+
+    is (deHum.factor() == 1, F("Dehum factor default"));
+    is (deHum.factor(3) == 3, F("Dehum factor 3"));
+    is (deHum.factor(1) == 1, F("Dehum factor 1"));
+
+    is (deHum.onHum() == HUM, F("Dehum onHum()"));
+    is (deHum.offHum() == HUM-1, F("Dehum offHum()"));
+
+    deHumTest(LOW, F("Default"));
+
+    deHum.process(60.0);
+    deHumTest(LOW, F("Dehum 60.0"));
+
+    deHum.process(59.9);
+    deHumTest(LOW, F("Dehum 59.9"));
+
+    deHum.process(61.5);
+    deHumTest(HIGH, F("Dehum 61.5"));
+
+    deHum.process(61.1);
+    deHumTest(HIGH, F("Dehum 61.1"));
+
+    deHum.reverse(true);
+
+    deHum.process(60.0);
+    deHumTest(HIGH, F("Dehum 60.0 rev"));
+
+    deHum.process(59.9);
+    deHumTest(HIGH, F("Dehum 59.9 rev"));
+
+    deHum.process(61.1);
+    deHumTest(LOW, F("Dehum 61.1 rev"));
+
+    deHum.process(61.1);
+    deHumTest(LOW, F("Dehum 61.1"));
+
+    deHum.process(58.1);
+    deHumTest(HIGH, F("Dehum 58.1"));
+
+    deHum.process(66);
+    deHumTest(LOW, F("Dehum 66.0"));
+
+    deHum.process(62.2);
+    deHumTest(LOW, F("Dehum 62.2"));
+
+    deHum.reverse(false);
+
+    deHum.process(58.9);
+    deHumTest(LOW, F("Dehum 58.9"));
+
+    deHum.process(76.9);
+    deHumTest(HIGH, F("Dehum 76.9"));
+
+    deHum.process(62.2);
+    deHumTest(HIGH, F("Dehum 62.2"));
+
+    deHum.process(58.4);
+    deHumTest(LOW, F("Dehum 58.4"));
+
+    deHum.process(76.9);
+    deHumTest(HIGH, F("Dehum 76.9"));
+
+    deHum.reverse(false);
 }
 
 void coolRelayTests () {
