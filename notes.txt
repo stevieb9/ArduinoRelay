@@ -1,0 +1,45 @@
+- loop()
+- if set button pressed, while() until complete
+- phase #1: select relay type, set
+- phase #2: select temp/hum/onTime, set
+- phase #3 (if cyc): select offtime, set
+- exit while loop
+
+pseudo:
+
+for (relays)
+  if (r.confset)
+      new tempRelay w/ no pin
+      set type on new relay
+
+      while (r.confstate < r.confactions)
+        set new timeout check for each phase
+        return if timeout reached and reset to previous config
+
+        if (r.confstate == 0)
+          - watch for up/down presses to cycle through type
+          - watch for set press
+          - set type in temp relay
+          r.confstate++
+          continue
+
+        if (r.type == temp|hum)
+          if (r.confstate == 1)
+           - watch for up/down presses to set temp
+           - watch for set press
+           - set temp/hum in temp relay
+           r.confstate++
+
+        if (r.type == cyc)
+          if (r.confstate == 1)
+            - watch for up/down presses to set onTime
+            - watch for set press
+            - set onTime in temp relay
+            r.confstate++
+           if (r.confstate == 2)
+             - watch for up/down presses to set offTime
+             - watch for set press
+             - set offTime in temp relay
+             r.confstate++
+      }
+      copy type, temp/hum, offtime, ontime from temp relay to original

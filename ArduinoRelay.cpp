@@ -24,6 +24,42 @@ ArduinoRelay::ArduinoRelay (int8_t type, int8_t pin, unsigned long onTime, unsig
     pinMode(_pin, OUTPUT);
 }
 
+void ArduinoRelay::automate (uint8_t relayNum) {
+    if (relayNum == 0) {
+        this->confDown  = 0;
+        this->confUp    = 1;
+        this->confSet   = 6;
+        this->num       = 0;
+    }
+
+    if (relayNum == 1) {
+        this->confDown  = 2;
+        this->confUp    = 3;
+        this->confSet   = 7;
+        this->num       = 1;
+    }
+
+    switch (this->type()) {
+        case RELAY_SWITCH:
+            this->confActions = 1; // type
+            break;
+
+        case RELAY_COOL:
+        case RELAY_HEAT:
+        case RELAY_HUMID:
+        case RELAY_DEHUMID:
+            this->confActions = 2; // type, (humidity|temp)
+            break;
+
+        case RELAY_CYCLE:
+            this->confActions = 3; // type, onTime, offTime
+            break;
+
+        default:
+            break;
+    }
+}
+
 uint8_t ArduinoRelay::reverse (uint8_t set) {
     if (set) {
         _reverseState   = true;

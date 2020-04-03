@@ -88,6 +88,21 @@ void switchRelayTests () {
 
     Serial.println(F("SWITCH RELAY"));
 
+    is (sw.type() == RELAY_SWITCH, F("Relay Switch type"));
+    is (sw.confSet == -1, F("Switch confState default"));
+    is (sw.confUp == -1, F("Switch confUp default"));
+    is (sw.confDown == -1, F("Switch confDown default"));
+    is (sw.confActions == 0, F("Switch confActions default"));
+    is (sw.num == -1, F("Switch num default"));
+
+    sw.automate(0);
+
+    is (sw.type() == RELAY_SWITCH, F("Relay Switch type post auto"));
+    is (sw.confSet == 6, F("Switch confState auto"));
+    is (sw.confUp == 1, F("Switch confUp auto"));
+    is (sw.confDown == 0, F("Switch confDown auto"));
+    is (sw.confActions == 1, F("Switch confActions auto"));
+
     sw.turnOn();
     is (digitalRead(swP) == HIGH, F("Switch turnOn()"));
     is (digitalRead(swP) == sw.on(), F("Switch turnOn() on()"));
@@ -117,6 +132,21 @@ void cycleRelayTests () {
     // CYCLE RELAY
 
     Serial.println(F("CYCLE RELAY"));
+
+    is (cyc.type() == RELAY_CYCLE, F("Relay cyc type"));
+    is (cyc.confSet == -1, F("cyc confState default"));
+    is (cyc.confUp == -1, F("cyc confUp default"));
+    is (cyc.confDown == -1, F("cyc confDown default"));
+    is (cyc.confActions == 0, F("cyc confActions default"));
+    is (cyc.num == -1, F("cyc num default"));
+
+    cyc.automate(1);
+
+    is (cyc.type() == RELAY_CYCLE, F("Relay cyc type post auto"));
+    is (cyc.confSet == 7, F("cyc confState auto"));
+    is (cyc.confUp == 3, F("cyc confUp auto"));
+    is (cyc.confDown == 2, F("cyc confDown auto"));
+    is (cyc.confActions == 3, F("cyc confActions auto"));
 
     is (cyc.reverse(true) == true, F("Cyc rev true"));
     is (cyc.reverse(false) == false, F("Cyc rev false"));
@@ -153,6 +183,21 @@ void humidityRelayTests () {
 
     Serial.println(F("HUMIDITY RELAY"));
 
+    is (hum.type() == RELAY_HUMID, F("Relay hum type"));
+    is (hum.confSet == -1, F("hum confState default"));
+    is (hum.confUp == -1, F("hum confUp default"));
+    is (hum.confDown == -1, F("hum confDown default"));
+    is (hum.confActions == 0, F("hum confActions default"));
+    is (hum.num == -1, F("hum num default"));
+
+    hum.automate(1);
+
+    is (hum.type() == RELAY_HUMID, F("Relay hum type post auto"));
+    is (hum.confSet == 7, F("hum confState auto"));
+    is (hum.confUp == 3, F("hum confUp auto"));
+    is (hum.confDown == 2, F("hum confDown auto"));
+    is (hum.confActions == 2, F("hum confActions auto"));
+
     is (hum.reverse(true) == true, F("Hum rev true"));
     is (hum.reverse(false) == false, F("Hum rev false"));
 
@@ -161,7 +206,7 @@ void humidityRelayTests () {
     is (hum.factor(1) == 1, F("Hum factor 1"));
 
     is (hum.onHum() == HUM, F("Hum onHum()"));
-    is (hum.offHum() == HUM+1, F("Hum offHum()"));
+    is (hum.offHum() == HUM + 1, F("Hum offHum()"));
 
     humTest(LOW, F("Default"));
 
@@ -221,6 +266,21 @@ void deHumidityRelayTests () {
 
     Serial.println(F("DE-HUMIDITY RELAY"));
 
+    is (deHum.type() == RELAY_DEHUMID, F("Relay dehum type"));
+    is (deHum.confSet == -1, F("dehum confState default"));
+    is (deHum.confUp == -1, F("dehum confUp default"));
+    is (deHum.confDown == -1, F("dehum confDown default"));
+    is (deHum.confActions == 0, F("dehum confActions default"));
+    is (deHum.num == -1, F("dehum num default"));
+
+    deHum.automate(0);
+
+    is (deHum.type() == RELAY_DEHUMID, F("Relay dehum type post auto"));
+    is (deHum.confSet == 6, F("dehum confState auto"));
+    is (deHum.confUp == 1, F("dehum confUp auto"));
+    is (deHum.confDown == 0, F("dehum confDown auto"));
+    is (deHum.confActions == 2, F("dehum confActions auto"));
+
     is (deHum.reverse(true) == true, F("Dehum rev true"));
     is (deHum.reverse(false) == false, F("Dehum rev false"));
 
@@ -229,7 +289,7 @@ void deHumidityRelayTests () {
     is (deHum.factor(1) == 1, F("Dehum factor 1"));
 
     is (deHum.onHum() == HUM, F("Dehum onHum()"));
-    is (deHum.offHum() == HUM-1, F("Dehum offHum()"));
+    is (deHum.offHum() == HUM - 1, F("Dehum offHum()"));
 
     deHumTest(LOW, F("Default"));
 
@@ -293,6 +353,22 @@ void coolRelayTests () {
 
     Serial.println(F("COOL RELAY"));
 
+    is (cool.type() == RELAY_COOL, F("Relay cool type"));
+    is (cool.confSet == -1, F("cool confState default"));
+    is (cool.confUp == -1, F("cool confUp default"));
+    is (cool.confDown == -1, F("cool confDown default"));
+    is (cool.confActions == 0, F("cool confActions default"));
+    is (cool.num == -1, F("cool num default"));
+
+    cool.automate(1);
+
+    is (cool.type() == RELAY_COOL, F("Relay cool type post auto"));
+    is (cool.confSet == 7, F("cool confState auto"));
+    is (cool.confUp == 3, F("cool confUp auto"));
+    is (cool.confDown == 2, F("cool confDown auto"));
+    is (cool.confActions == 2, F("cool confActions auto"));
+
+
     is (cool.reverse(true) == true, F("Cool rev true"));
     is (cool.reverse(false) == false, F("Cool rev false"));
 
@@ -300,7 +376,7 @@ void coolRelayTests () {
     is (cool.factor(3) == 3, F("Cool factor 3"));
     is (cool.factor(1) == 1, F("Cool factor 1"));
     is (cool.onTemp() == TEMP, F("Cool onTemp()"));
-    is (cool.offTemp() == TEMP-1, F("Cool offTemp()"));
+    is (cool.offTemp() == TEMP - 1, F("Cool offTemp()"));
 
     coolTest(LOW, F("Default"));
 
@@ -346,6 +422,21 @@ void heatRelayTests () {
 
     Serial.println(F("HEAT RELAY"));
 
+    is (heat.type() == RELAY_HEAT, F("Relay heat type"));
+    is (heat.confSet == -1, F("heat confState default"));
+    is (heat.confUp == -1, F("heat confUp default"));
+    is (heat.confDown == -1, F("heat confDown default"));
+    is (heat.confActions == 0, F("heat confActions default"));
+    is (heat.num == -1, F("heat num default"));
+
+    heat.automate(0);
+
+    is (heat.type() == RELAY_HEAT, F("Relay heat type post auto"));
+    is (heat.confSet == 6, F("heat confState auto"));
+    is (heat.confUp == 1, F("heat confUp auto"));
+    is (heat.confDown == 0, F("heat confDown auto"));
+    is (heat.confActions == 2, F("heat confActions auto"));
+
     is (heat.reverse(true) == true, F("Heat rev true"));
     is (heat.reverse(false) == false, F("Heat rev false"));
 
@@ -353,7 +444,7 @@ void heatRelayTests () {
     is (heat.factor(3) == 3, F("Heat factor 3"));
     is (heat.factor(1) == 1, F("Heat factor 1"));
     is (heat.onTemp() == TEMP, F("Heat onTemp()"));
-    is (heat.offTemp() == TEMP+1, F("Heat offTemp()"));
+    is (heat.offTemp() == TEMP + 1, F("Heat offTemp()"));
 
     heatTest(LOW, F("Default"));
 
