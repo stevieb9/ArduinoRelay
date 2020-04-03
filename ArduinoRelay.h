@@ -22,7 +22,7 @@ class ArduinoRelay {
 
         /* Core */
 
-        int8_t  _type           = -1;
+        int8_t  _type           =  RELAY_SWITCH;
         int8_t  _pin            = -1;
         uint8_t _on             = HIGH;
         uint8_t _off            = LOW;
@@ -59,6 +59,7 @@ class ArduinoRelay {
         uint8_t confActions    =  0; // Number of set screens
         int8_t num             = -1;
 
+        ArduinoRelay () = default;
         explicit ArduinoRelay (int8_t type) { _type = type; }
         ArduinoRelay (int8_t type, int8_t pin) {
             _type = type;
