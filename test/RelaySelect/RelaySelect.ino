@@ -14,7 +14,7 @@ const char relayTypes[6][8] = {
 };
 
 ArduinoRelay r[NUM_RELAYS];
-MultiButton mb;
+MultiButton mb(Serial);
 
 void setup() {
     Serial.begin(9600);
@@ -51,13 +51,16 @@ void relayConfigCheck () {
     for (uint8_t i = 0; i < NUM_RELAYS; i++) {
         if (buttonPressed == r[i].confSet) {
             ArduinoRelay tempRelay;
+            tempRelay.confNum = i;
 
             // Select relay type
             uint8_t position = 0;
 
-            while (tempRelay.confState < tempRelay.confActions) {
-                Serial.print("State: ");
-                Serial.println(tempRelay.confState);
+            while ((tempRelay.confState < tempRelay.confActions) || tempRelay.confActions < 0) {
+//                Serial.print(F("confState: "));
+//                Serial.println(tempRelay.confState);
+//                Serial.print(F("confActions: "));
+//                Serial.println(tempRelay.confActions);
 
                 delay(0);  // To avoid reboot of while loop taking too long
 
@@ -66,7 +69,11 @@ void relayConfigCheck () {
                 if (buttonPressed > -1) {
                     Serial.print("Button: ");
                     Serial.println(buttonPressed);
-                    if (r[i].confState == 0) {
+
+                    if (tempRelay.confState == 0) {
+                        Serial.print("confUp: ");
+                        Serial.println(tempRelay.confUp);
+
                         // RELAY TYPE SELECT
                         if (buttonPressed == r[i].confUp) {
                             if (position < RELAY_TYPE_COUNT - 1) {
@@ -83,7 +90,7 @@ void relayConfigCheck () {
                         else if (buttonPressed == r[i].confSet) {
                             tempRelay.type(position);
                             buttonPressed = -1;
-                            r[i].confState++;
+                            tempRelay.confState++;
                         }
                     }
                     else if (tempRelay.type() == RELAY_COOL || tempRelay.type() == RELAY_HEAT || tempRelay.type() == RELAY_HUMID || tempRelay.type() == RELAY_DEHUMID) {
@@ -91,7 +98,7 @@ void relayConfigCheck () {
                         Serial.print("TEMP ");
                         Serial.print(tempRelay.type());
 
-                        if (r[i].confState == 1) {
+                        if (tempRelay.confState == 1) {
 
                             if (tempRelay.type() == RELAY_COOL || tempRelay.type() == RELAY_HEAT) {
                                 // RELAY TEMP SELECT
@@ -102,15 +109,15 @@ void relayConfigCheck () {
                                     Serial.print("Temp++: ");
                                     Serial.println(tempRelay.baseTemp());
                                 }
-                                if (buttonPressed == r[i].confDown) {
+                                if (buttonPressed == tempRelay.confDown) {
                                     if (tempRelay.baseTemp() > RELAY_MIN_TEMP) {
                                         tempRelay.baseTemp(tempRelay.baseTemp() - 1);
                                     }
                                     Serial.print("Temp--: ");
                                     Serial.println(tempRelay.baseTemp());
                                 }
-                                else if (buttonPressed == r[i].confSet) {
-                                    r[i].confState++;
+                                else if (buttonPressed == tempRelay.confSet) {
+                                    tempRelay.confState++;
                                 }
 
                             }

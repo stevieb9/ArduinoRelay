@@ -29,14 +29,14 @@ void ArduinoRelay::automate (uint8_t relayNum) {
         this->confDown  = 0;
         this->confUp    = 1;
         this->confSet   = 6;
-        this->num       = 0;
+        this->confNum   = 0;
     }
 
     if (relayNum == 1) {
         this->confDown  = 2;
         this->confUp    = 3;
         this->confSet   = 7;
-        this->num       = 1;
+        this->confNum   = 1;
     }
 
     switch (this->type()) {

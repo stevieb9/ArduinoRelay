@@ -63,8 +63,8 @@ class ArduinoRelay {
         int8_t confSet         = -1; // Set button
         int8_t confUp          = -1; // + button
         int8_t confDown        = -1; // - button
-        uint8_t confActions    =  0; // Number of set screens
-        int8_t num             = -1;
+        int8_t confActions     = -1; // Number of set screens
+        int8_t confNum         = -1;
 
         ArduinoRelay () = default;
         explicit ArduinoRelay (int8_t type) { _type = type; }
@@ -85,9 +85,9 @@ class ArduinoRelay {
         void process (double value);    // cool, heat, hum, dehum, sw
 
         int8_t type () { return _type; }
-        int8_t type (int8_t type) { _type = type; return _type; }
+        int8_t type (int8_t type) { _type = type; automate(this->confNum); return _type; }
 
-    int8_t pin () { return _pin; }
+        int8_t pin () { return _pin; }
         int8_t pin (int8_t pin) { _pin = pin; return _pin; }
 
         uint8_t on ()  { return _on; }
