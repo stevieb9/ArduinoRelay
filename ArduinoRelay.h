@@ -3,12 +3,19 @@
 
 #include "Arduino.h"
 
+#define RELAY_TYPE_COUNT     6
+
 #define RELAY_COOL      0
 #define RELAY_HEAT      1
 #define RELAY_HUMID     2
 #define RELAY_DEHUMID   3
 #define RELAY_CYCLE     4
 #define RELAY_SWITCH    5
+
+#define RELAY_MIN_TEMP  50
+#define RELAY_MAX_TEMP  90
+#define RELAY_MIN_HUM   20
+#define RELAY_MAX_HUM   80
 
 using namespace std;
 
@@ -78,8 +85,9 @@ class ArduinoRelay {
         void process (double value);    // cool, heat, hum, dehum, sw
 
         int8_t type () { return _type; }
+        int8_t type (int8_t type) { _type = type; return _type; }
 
-        int8_t pin () { return _pin; }
+    int8_t pin () { return _pin; }
         int8_t pin (int8_t pin) { _pin = pin; return _pin; }
 
         uint8_t on ()  { return _on; }
