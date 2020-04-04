@@ -1,9 +1,11 @@
 #include <Arduino.h>
 #include <ArduinoRelay.h>
+#include <MultiButton.h>
 
 #define NUM_RELAYS 2
 
 ArduinoRelay r[NUM_RELAYS];
+MultiButton mb;
 
 void setup() {
     Serial.begin(9600);
@@ -25,7 +27,7 @@ void setup() {
 }
 
 void loop() {
-
+    relayConfigCheck();
 }
 
 void relayAutomate () {
@@ -35,9 +37,13 @@ void relayAutomate () {
 }
 
 void relayConfigCheck () {
-    for (uint8_t i=0; i<NUM_RELAYS; i++) {
-        if (r[i].confSet
-    }
+    int8_t buttonPressed = mb.pressed();
 
+    for (uint8_t i=0; i<NUM_RELAYS; i++) {
+        if (buttonPressed == r[i].confSet) {
+            Serial.print("Relay config");
+            Serial.println(i);
+        }
+    }
 }
 
